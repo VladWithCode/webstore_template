@@ -18,6 +18,8 @@ const ProductSchema = new Schema({
       imgs: { type: [String] },
     }),
   ],
+  absolutePath: { type: String },
+  staticPath: { type: String },
 });
 
 module.exports = model('ProductSchema', ProductSchema);
