@@ -2,9 +2,9 @@ const help = {};
 
 help.slugifyString = str => str.split(' ').join('-');
 
-help.asyncHandler = promise => {
+help.asyncHandler = async p => {
   try {
-    return [await promise(), null];
+    return [await p, null];
   } catch (err) {
     return [null, err];
   }
