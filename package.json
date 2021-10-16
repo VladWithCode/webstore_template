@@ -1,0 +1,28 @@
+{
+  "name": "webstore",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": "https://vladwithcode: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@github.com/VladWithCode/webstore.git",
+  "author": "vladwithcode <vladwithcode@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "busboy-body-parser": "^0.3.2",
+    "compression": "^1.7.4",
+    "connect-mongodb-session": "^3.1.1",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "mongoose": "^6.0.11",
+    "morgan": "^1.10.0",
+    "nanoid": "^3.1.30",
+    "passport": "^0.5.0",
+    "passport-local": "^1.0.0",
+    "stripe": "^8.183.0"
+  }
+}
