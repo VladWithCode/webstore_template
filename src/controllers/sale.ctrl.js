@@ -63,8 +63,6 @@ ctrl.registerSale = async (req, res, next) => {
   sale.payment.paid = true;
   sale.payment.paidAt = new Date();
 
-  console.log(payment);
-
   const [, saveError] = await asyncHandler(sale.save());
 
   if (saveError) return next(saveError);
@@ -75,14 +73,25 @@ ctrl.registerSale = async (req, res, next) => {
   });
 };
 
-ctrl.getSales = async (req, res) => {
+ctrl.getSales = async (req, res, next) => {
   const {} = req.query;
+
+  const [sales, findError] = await asyncHandler(Sale.find().lean());
+
+  if (findError) return next(findError);
+
+  return res.json({
+    status: 'OK',
+    sales,
+  });
 };
 
-ctrl.getSale = async (req, res) => {
+ctrl.getSale = async (req, res, next) => {
   const { id } = req.params;
 
-  const sale = await Sale.findById(id);
+  const [sale, findError] = await asyncHandler(Sale.findById(id).lean());
+
+  if (findError) return next(findError);
 
   if (!sale) {
     return res.json({
@@ -101,7 +110,9 @@ ctrl.updateSale = async (req, res, next) => {
   const { id } = req.params;
   const { saleData } = req.body;
 
-  const sale = Sale.findById(id);
+  const [sale, findError] = await asyncHandler(Sale.findById(id));
+
+  if (findError) return next(findError);
 
   if (!sale) {
     return res.json({
@@ -114,14 +125,31 @@ ctrl.updateSale = async (req, res, next) => {
 ctrl.deleteSale = async (req, res, next) => {
   const { id } = req.params;
 
-  const sale = Sale.findById(id);
+  const [sale, findError] = await asyncHandler(Sale.findById(id));
+
+  if (findError) return next(findError);
+
+  if (!sale) {
+    return res.json({
+      status: 'NOT_FOUND',
+      message: `No existe venta con id ${id}`,
+    });
+  }
 };
 
 ctrl.cancelSale = async (req, res, next) => {
   const { id } = req.params;
 
-  const sale = Sale.findById(id);
-  ostman;
+  const [sale, findError] = await asyncHandler(Sale.findById(id));
+
+  if (findError) return next(findError);
+
+  if (!sale) {
+    return res.json({
+      status: 'NOT_FOUND',
+      message: `No existe venta con id ${id}`,
+    });
+  }
 };
 
 module.exports = ctrl;
