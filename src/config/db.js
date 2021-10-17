@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-
-const DB_URI = `mongodb://localhost:27017/store`;
+const { DB_URI } = require('./env');
 
 mongoose.connect(DB_URI, err => {
   if (err) {
