@@ -49,4 +49,4 @@ const SaleSchema = new Schema(
   { _id: false, id: false, timestamps: true }
 );
 
-module.exports = model('SaleSchema', SaleSchema);
+module.exports = model('Sale', SaleSchema);

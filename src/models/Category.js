@@ -28,4 +28,4 @@ const CategorySchema = new Schema(
   { versionKey: false }
 );
 
-module.exports = model('CategorySchema', CategorySchema);
+module.exports = model('Category', CategorySchema);

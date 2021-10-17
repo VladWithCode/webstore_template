@@ -1,13 +1,14 @@
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
+const { asyncHandler } = require('../functions/GeneralHelpers');
 const Admin = require('../models/Admin');
 
 passport.deserializeUser(async (id, done) => {
-  try {
-    done(null, await Admin.findById(id));
-  } catch (err) {
-    done(err, false);
-  }
+  const [admin, findError] = await asyncHandler(Admin.findById(id));
+
+  if (findError) return done(findError, false);
+
+  return done(null, admin);
 });
 
 passport.serializeUser((_, admin, done) => {
@@ -23,19 +24,20 @@ passport.use(
       passReqToCallback: true,
     },
     async (req, user, pw, done) => {
-      try {
-        const admin = await Admin.findOne({ name: user.toLowerCase() });
+      const [admin, findError] = await asyncHandler(
+        Admin.findOne({ name: user }).lean()
+      );
 
-        if (!admin) {
-          return done(undefined, false, {
-            message: `El usuario ${user} no existe.`,
-          });
-        }
+      if (findError)
+        return done(findError, false, { message: 'Error al iniciar sesión' });
 
-        return done(undefined, admin);
-      } catch (err) {
-        done(err, false, { message: 'Error al iniciar sesión' });
+      if (!admin) {
+        return done(undefined, false, {
+          message: `El usuario ${user} no existe.`,
+        });
       }
+
+      return done(undefined, admin);
     }
   )
 );

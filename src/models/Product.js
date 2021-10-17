@@ -22,4 +22,4 @@ const ProductSchema = new Schema({
   staticPath: { type: String },
 });
 
-module.exports = model('ProductSchema', ProductSchema);
+module.exports = model('Product', ProductSchema);

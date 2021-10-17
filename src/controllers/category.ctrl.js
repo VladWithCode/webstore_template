@@ -103,9 +103,11 @@ ctrl.updateCategory = async (req, res, next) => {
   }
 
   if (img) {
-    const [, writeFileError] = await writeFile(
-      img.data,
-      path.join(category.absolutePath, 'main' + path.extname(img.name))
+    const [, writeFileError] = await asyncHandler(
+      writeFile(
+        img.data,
+        path.join(category.absolutePath, 'main' + path.extname(img.name))
+      )
     );
 
     if (writeFileError) return next(err);
@@ -135,9 +137,8 @@ ctrl.deleteCategory = async (req, res, next) => {
     });
   }
 
-  const [, deleteDirError] = await deleteFileOrDirectory(
-    category.absolutePath,
-    true
+  const [, deleteDirError] = await asyncHandler(
+    deleteFileOrDirectory(category.absolutePath, true)
   );
 
   if (deleteDirError) console.log(deleteDirError);

@@ -5,7 +5,7 @@ const sessionStorage = require('connect-mongodb-session');
 const cookieParser = require('cookie-parser');
 const busboyBodyParser = require('busboy-body-parser');
 const morgan = require('morgan');
-const passport = require('passport');
+// const passport = require('passport');
 const cors = require('cors');
 const compression = require('compression');
 
@@ -26,7 +26,7 @@ const mdbStore = new (sessionStorage(session))(
 );
 
 require('./config/db');
-require('./config/passport');
+// require('./config/passport');
 const { PORT } = require('./config/env');
 
 /* Route Imports */
@@ -35,7 +35,7 @@ const privateRoutes = require('./routes/private.routes');
 
 /* Misc */
 const globals = require('./config/globals');
-const { isAuthenticated } = require('./functions/AuthHelpers');
+// const { isAuthenticated } = require('./functions/AuthHelpers');
 
 // Settings
 app.set('public', globals.publicDirPath);
@@ -59,8 +59,8 @@ app.use(
     store: mdbStore,
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 app.use(compression({ threshold: 0 }));
 // Use morgan loggin when not in production mode
 (process.env.NODE_ENV !== 'production' && app.use(morgan('dev'))) ||
@@ -73,7 +73,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/public', publicRoutes); // Public API
-app.use('/api/private', isAuthenticated, privateRoutes); // Private API
+app.use('/api/private', /* isAuthenticated, */ privateRoutes); // Private API
 
 // Static Files
 app.use('/static', express.static(app.get('public')));

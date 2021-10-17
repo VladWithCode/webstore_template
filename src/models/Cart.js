@@ -19,4 +19,4 @@ const cartSchema = new Schema(
   { versionKey: false }
 );
 
-module.exports = model('cartSchema', cartSchema);
+module.exports = model('Cart', cartSchema);
