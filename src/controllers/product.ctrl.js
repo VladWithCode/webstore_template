@@ -6,32 +6,28 @@ const {
   writeFile,
   deleteFileOrDirectory,
 } = require('../functions/FileHelpers');
-const { asyncHandler } = require('../functions/GeneralHelpers');
-const slugifyString = require('../functions/slugifyString');
+const { asyncHandler, slugifyString } = require('../functions/GeneralHelpers');
 const Product = require('../models/Product');
 
 const ctrl = {};
 
 ctrl.createProduct = async (req, res, next) => {
-  const { productData } = req.body;
+  const productData = req.body;
   const imgs = req.files?.imgs;
 
   const product = new Product(productData);
 
-  const slugifiedName = slugifyString(product.name);
+  product.slug = slugifyString(
+    product.name +
+      ' ' +
+      String(product._id).slice(
+        String(product._id).length - 5,
+        String(product._id).length
+      )
+  );
 
-  product.absolutePath = path.join(publicDirPath, '/products', slugifiedName);
-  product.staticPath = `/static/products/${slugifiedName}`;
-
-  const { options, extras } = productData;
-
-  product.options = options?.map(option => {
-    return { ...option, _id: undefined, ogOption: option._id };
-  });
-
-  product.extras = extras?.map(extra => {
-    return { ...extra, _id: undefined, ogExtra: extra._id };
-  });
+  product.absolutePath = path.join(publicDirPath, '/products', product.slug);
+  product.staticPath = `/static/products/${product.slug}`;
 
   const [, createDirectoryError] = await asyncHandler(
     createDirectory(product.absolutePath, true)
@@ -39,15 +35,37 @@ ctrl.createProduct = async (req, res, next) => {
 
   if (createDirectoryError) return next(createDirectoryError);
 
+  // Remove images from product and disk
+  if (imgs && imgs.length < product.imgs.length) {
+    const deleteImagesPromises = [];
+
+    product.imgs = product.imgs.filter(img => {
+      const keepImg = imgs.includes(img);
+
+      if (!keepImg)
+        deleteImagesPromises.push(
+          deleteFileOrDirectory(
+            path.join(product.absolutePath, path.basename(img)),
+            true
+          )
+        );
+
+      return keepImg;
+    });
+
+    const [, deleteImagesError] = await asyncHandler(
+      Promise.all(deleteImagesPromises)
+    );
+
+    if (deleteImagesError) return next(deleteImagesError);
+  }
+
+  // Add new images to the product and write them to disk
   if (imgs && imgs.length > 0) {
     const writeImagesPromises = [];
 
     imgs.forEach(img => {
-      const staticPath = `${product.staticPath}/${img.name}`;
-
-      if (product.imgs.includes(staticPath)) return;
-
-      product.imgs.push(staticPath);
+      product.imgs.push(`${product.staticPath}/${img.name}`);
 
       writeImagesPromises.push(
         writeFile(img.data, path.join(product.absolutePath, img.name))
@@ -61,11 +79,9 @@ ctrl.createProduct = async (req, res, next) => {
     if (writeImagesError) return next(writeImagesError);
   }
 
-  try {
-    await product.save();
-  } catch (err) {
-    return next(err);
-  }
+  const [, saveError] = await asyncHandler(product.save());
+
+  if (saveError) return next(saveError);
 
   return res.json({
     status: 'OK',
@@ -131,7 +147,7 @@ ctrl.getProduct = async (req, res, next) => {
 
 ctrl.updateProduct = async (req, res, next) => {
   const { id } = req.params;
-  const { productData } = req.body;
+  const productData = req.body;
   const imgs = req.files?.imgs;
 
   const [product, findError] = await asyncHandler(Product.findById(id));
@@ -145,9 +161,7 @@ ctrl.updateProduct = async (req, res, next) => {
     });
   }
 
-  if (productData) {
-    product.set(productData);
-  }
+  product.set(productData);
 
   // Remove images from product and disk
   if (imgs && imgs.length < product.imgs.length) {
@@ -182,15 +196,15 @@ ctrl.updateProduct = async (req, res, next) => {
       product.imgs.push(`${product.staticPath}/${img.name}`);
 
       writeImagesPromises.push(
-        fs.writeFile(path.join(product.absolutePath, img.name), img.data)
+        writeFile(img.data, path.join(product.absolutePath, img.name))
       );
     });
 
-    try {
-      await Promise.all(writeImagesPromises);
-    } catch (err) {
-      return next(err);
-    }
+    const [, writeImagesError] = await asyncHandler(
+      Promise.all(writeImagesPromises)
+    );
+
+    if (writeImagesError) return next(writeImagesError);
   }
 
   const [, saveError] = await asyncHandler(product.save());

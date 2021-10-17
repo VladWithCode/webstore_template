@@ -1,6 +1,7 @@
-const asyncOp = require('../functions/asyncOperation');
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
+
+// const asyncOp = require('../functions/asyncOperation');
 
 const ctrl = {};
 
@@ -10,7 +11,7 @@ ctrl.registerSale = async (req, res, next) => {
   const sale = new Sale(saleData);
 
   const saleItemsPromises = [];
-
+  /* 
   if (saleData.items && saleData.items.length > 0) {
     for (let item of saleData.items) {
       const saleItemPromise = asyncOp(async () => {
@@ -74,7 +75,7 @@ ctrl.registerSale = async (req, res, next) => {
       saleItemsPromises.push(saleItemPromise);
     }
   }
-
+ */
   sale.items = await Promise.all(saleItemsPromises);
 
   return res.json({

@@ -1,3 +1,6 @@
+# Public Folder
+public/products/*
+
 # Logs
 logs
 *.log

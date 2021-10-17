@@ -13,8 +13,8 @@ router.use('/business', businessRoutes);
 
 router.use('/categories', categoryRoutes);
 
-router.use('/product', productRoutes);
+router.use('/products', productRoutes);
 
-router.use('/sale', saleRoutes);
+router.use('/sales', saleRoutes);
 
 module.exports = router;

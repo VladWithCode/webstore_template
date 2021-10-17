@@ -12,7 +12,7 @@ const { asyncHandler } = require('../functions/GeneralHelpers');
 const ctrl = {};
 
 ctrl.createCategory = async (req, res, next) => {
-  const { categoryData } = req.body;
+  const categoryData = req.body;
   const img = req.files?.img[0];
 
   const category = new Category(categoryData);
@@ -84,7 +84,7 @@ ctrl.getCategory = async (req, res, next) => {
 
 ctrl.updateCategory = async (req, res, next) => {
   const { id } = req.params;
-  const { categoryData } = req.body;
+  const categoryData = req.body;
   const img = req.files?.img[0];
 
   const [category, findError] = await asyncHandler(Category.findById(id));
@@ -98,9 +98,7 @@ ctrl.updateCategory = async (req, res, next) => {
     });
   }
 
-  if (categoryData) {
-    category.set(categoryData);
-  }
+  category.set(categoryData);
 
   if (img) {
     const [, writeFileError] = await asyncHandler(
