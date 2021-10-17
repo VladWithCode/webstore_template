@@ -4,6 +4,7 @@ const {
   getSale,
   updateSale,
   deleteSale,
+  initSale,
 } = require('../../controllers/sale.ctrl');
 
 const router = require('express').Router();
@@ -11,6 +12,8 @@ const router = require('express').Router();
 router.post('/', registerSale);
 
 router.get('/', getSales);
+
+router.get('/init', initSale);
 
 router.get('/:id', getSale);
 

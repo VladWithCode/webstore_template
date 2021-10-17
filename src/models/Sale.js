@@ -15,33 +15,33 @@ const SaleSchema = new Schema(
       {
         street: String,
         col: String,
-        cp: Number,
+        zip: Number,
         extNumber: String,
         intNumber: String,
         refs: String,
       },
-      { _id: false, id: false }
+      { versionKey: false, _id: false, id: false }
     ),
     items: [
       new Schema({
         product: { type: Types.ObjectId, ref: 'Product' },
-        title: { type: String },
-        qty: { type: Number },
-        price: { type: Number },
-        total: { type: Number },
+        name: { type: String },
+        qty: { type: Number, default: 1 },
+        price: { type: Number, default: 0 },
+        total: { type: Number, default: 0 },
       }),
     ],
     payment: new Schema(
       {
         _id: { type: String },
         method: { type: String, enum: ['paypal', 'tarjeta'] },
-        payerId: { type: String },
-        payed: { type: Boolean, default: false },
-        payedAt: { type: Date, default: null },
-        subtotal: { type: Number },
-        tax: { type: Number },
-        shipment: { type: Number },
-        total: { type: Number },
+        // payerId: { type: String },
+        paid: { type: Boolean, default: false },
+        paidAt: { type: Date, default: null },
+        subtotal: { type: Number, default: 0 },
+        tax: { type: Number, default: 0 },
+        shipment: { type: Number, default: 0 },
+        total: { type: Number, default: 0 },
       },
       { _id: false, id: false }
     ),

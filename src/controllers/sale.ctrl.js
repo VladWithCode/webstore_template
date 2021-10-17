@@ -1,3 +1,6 @@
+const Stripe = require('../config/stripe');
+const { asyncHandler, safeRound } = require('../functions/GeneralHelpers');
+
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
 
@@ -5,78 +8,66 @@ const Sale = require('../models/Sale');
 
 const ctrl = {};
 
+ctrl.initSale = async (req, res) => {
+  const sale = new Sale();
+
+  return res.json({
+    status: 'OK',
+    sale,
+  });
+};
+
 ctrl.registerSale = async (req, res, next) => {
-  const { saleData, deliveryPrice } = req.body;
+  const saleData = req.body;
 
   const sale = new Sale(saleData);
 
-  const saleItemsPromises = [];
-  /* 
-  if (saleData.items && saleData.items.length > 0) {
-    for (let item of saleData.items) {
-      const saleItemPromise = asyncOp(async () => {
-        const product = await Product.findById(item.product).lean();
-        const options = [];
-        const extras = [];
-        let itemTotal = product.price * item.qty;
+  const productIds = saleData.items?.map(i => i.product);
 
-        product.options.forEach(productOption => {
-          const saleOption = item.options.find(
-            saleOption => String(saleOption._id) === String(productOption._id)
-          );
+  const [products, findProductsError] = await asyncHandler(
+    Product.find({ _id: productIds })
+  );
 
-          if (!saleOption) return;
+  if (findProductsError) return next(findProductsError);
 
-          const optionTotal = productOption.price * saleOption.qty;
+  for (const product of products) {
+    const index = sale.items.findIndex(
+      i => String(i.product) === String(product._id)
+    );
+    const item = sale.items[index];
 
-          options.push({
-            title: productOption.title,
-            qty: saleOption.qty,
-            price: productOption.price,
-            total: optionTotal,
-          });
+    if (!item) continue;
 
-          itemTotal += optionTotal;
-        });
+    item.name = product.name;
+    item.price = product.price;
+    item.total = safeRound(item.price * item.qty);
 
-        product.extras.forEach(productExtra => {
-          const saleExtra = item.extras.find(
-            saleExtra => String(saleExtra._id) === String(productExtra._id)
-          );
-
-          if (!saleExtra) return;
-
-          const extraTotal = productExtra.price * saleExtra.qty;
-
-          extras.push({
-            title: productExtra.title,
-            qty: saleExtra.qty,
-            price: productExtra.price,
-            total: extraTotal,
-          });
-
-          itemTotal += extraTotal;
-        });
-
-        sale.payment.subtotal += itemTotal;
-
-        return {
-          product: item.product,
-          title: item.title,
-          qty: item.qty,
-          price: product.price,
-          subtotal: product.price * item.qty,
-          options,
-          extras,
-          total: itemTotal,
-        };
-      });
-
-      saleItemsPromises.push(saleItemPromise);
-    }
+    sale.payment.subtotal += item.total;
   }
- */
-  sale.items = await Promise.all(saleItemsPromises);
+
+  sale.payment.total = safeRound(sale.payment.subtotal + sale.payment.shipment);
+
+  const [payment, createPaymentError] = await asyncHandler(
+    Stripe.paymentIntents.create({
+      currency: 'MXN',
+      amount: sale.payment.total * 100,
+      description: 'Compra de ropa en prettyprieto.com',
+      payment_method: saleData.methodId,
+      confirm: true,
+    })
+  );
+
+  if (createPaymentError) return next(createPaymentError);
+
+  sale._id = payment.id;
+  sale.payment.paid = true;
+  sale.payment.paidAt = new Date();
+
+  console.log(payment);
+
+  const [, saveError] = await asyncHandler(sale.save());
+
+  if (saveError) return next(saveError);
 
   return res.json({
     status: 'OK',

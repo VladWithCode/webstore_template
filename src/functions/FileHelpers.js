@@ -1,5 +1,4 @@
 const fs = require('fs/promises');
-const _path = require('path');
 
 const help = {};
 

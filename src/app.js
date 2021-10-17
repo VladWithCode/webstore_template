@@ -1,3 +1,5 @@
+process.env.NODE_ENV !== 'production' && require('dotenv').config();
+
 // Module imports
 const express = require('express');
 const session = require('express-session');

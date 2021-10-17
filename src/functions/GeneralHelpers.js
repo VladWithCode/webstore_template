@@ -10,4 +10,8 @@ help.asyncHandler = async p => {
   }
 };
 
+help.safeRound = n => {
+  return Math.round(n * 100) / 100;
+};
+
 module.exports = help;
