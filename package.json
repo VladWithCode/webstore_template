@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "dev": "DEBUG=true nodemon src/app.js"
   },
   "repository": "https://vladwithcode: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@github.com/VladWithCode/webstore.git",
   "author": "vladwithcode <vladwithcode@gmail.com>",

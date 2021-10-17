@@ -1,6 +1,12 @@
 const fs = require('fs/promises');
 const path = require('path');
 const { publicDirPath } = require('../config/globals');
+const {
+  createDirectory,
+  writeFile,
+  deleteFileOrDirectory,
+} = require('../functions/FileHelpers');
+const { asyncHandler } = require('../functions/GeneralHelpers');
 const slugifyString = require('../functions/slugifyString');
 const Product = require('../models/Product');
 
@@ -27,11 +33,11 @@ ctrl.createProduct = async (req, res, next) => {
     return { ...extra, _id: undefined, ogExtra: extra._id };
   });
 
-  try {
-    await fs.mkdir(product.absolutePath, { recursive: true });
-  } catch (err) {
-    return next(err);
-  }
+  const [, createDirectoryError] = await asyncHandler(
+    createDirectory(product.absolutePath, true)
+  );
+
+  if (createDirectoryError) return next(createDirectoryError);
 
   if (imgs && imgs.length > 0) {
     const writeImagesPromises = [];
@@ -44,15 +50,15 @@ ctrl.createProduct = async (req, res, next) => {
       product.imgs.push(staticPath);
 
       writeImagesPromises.push(
-        fs.writeFile(path.join(product.absolutePath, img.name), img.data)
+        writeFile(img.data, path.join(product.absolutePath, img.name))
       );
     });
 
-    try {
-      await Promise.all(writeImagesPromises);
-    } catch (err) {
-      return next(err);
-    }
+    const [, writeImagesError] = await asyncHandler(
+      Promise.all(writeImagesPromises)
+    );
+
+    if (writeImagesError) return next(writeImagesError);
   }
 
   try {
@@ -67,7 +73,7 @@ ctrl.createProduct = async (req, res, next) => {
   });
 };
 
-ctrl.getProducts = async (req, res) => {
+ctrl.getProducts = async (req, res, next) => {
   const { ids, names, ctgs } = req.query;
 
   const queryFilter = {};
@@ -84,7 +90,11 @@ ctrl.getProducts = async (req, res) => {
     queryFilter.ctg = ctgs.split(',');
   }
 
-  const products = await Product.find(queryFilter).lean();
+  const [products, findError] = await asyncHandler(
+    Product.find(queryFilter).lean()
+  );
+
+  if (findError) return next(findError);
 
   if ((ids || names || ctgs) && (!products || products.length === 0)) {
     return res.json({
@@ -99,10 +109,12 @@ ctrl.getProducts = async (req, res) => {
   });
 };
 
-ctrl.getProduct = async (req, res) => {
+ctrl.getProduct = async (req, res, next) => {
   const { id } = req.params;
 
-  const product = await Product.findById(id).lean();
+  const [product, findError] = await asyncHandler(Product.findById(id).lean());
+
+  if (findError) return next(findError);
 
   if (!product) {
     return res.json({
@@ -122,7 +134,9 @@ ctrl.updateProduct = async (req, res, next) => {
   const { productData } = req.body;
   const imgs = req.files?.imgs;
 
-  const product = await Product.findById(id);
+  const [product, findError] = await asyncHandler(Product.findById(id));
+
+  if (findError) return next(findError);
 
   if (!product) {
     return res.json({
@@ -144,20 +158,20 @@ ctrl.updateProduct = async (req, res, next) => {
 
       if (!keepImg)
         deleteImagesPromises.push(
-          fs.rm(path.join(product.absolutePath, path.basename(img)), {
-            recursive: true,
-            force: true,
-          })
+          deleteFileOrDirectory(
+            path.join(product.absolutePath, path.basename(img)),
+            true
+          )
         );
 
       return keepImg;
     });
 
-    try {
-      await Promise.all(deleteImagesPromises);
-    } catch (err) {
-      return next(err);
-    }
+    const [, deleteImagesError] = await asyncHandler(
+      Promise.all(deleteImagesPromises)
+    );
+
+    if (deleteImagesError) return next(deleteImagesError);
   }
 
   // Add new images to the product and write them to disk
@@ -179,11 +193,9 @@ ctrl.updateProduct = async (req, res, next) => {
     }
   }
 
-  try {
-    await product.save();
-  } catch (err) {
-    return next(err);
-  }
+  const [, saveError] = await asyncHandler(product.save());
+
+  if (saveError) return next(saveError);
 
   return res.json({
     status: 'OK',
@@ -194,7 +206,9 @@ ctrl.updateProduct = async (req, res, next) => {
 ctrl.deleteProduct = async (req, res, next) => {
   const { id } = req.params;
 
-  const product = await Product.findById(id);
+  const [product, findError] = await asyncHandler(Product.findById(id));
+
+  if (findError) return next(findError);
 
   if (!product) {
     return res.json({
@@ -203,13 +217,15 @@ ctrl.deleteProduct = async (req, res, next) => {
     });
   }
 
-  try {
-    await product.remove();
+  const [, removeError] = await asyncHandler(product.remove());
 
-    await fs.rm(product.absolutePath, { recursive: true, force: true });
-  } catch (err) {
-    return next(err);
-  }
+  if (removeError) return next(err);
+
+  const [, rmDirectoryError] = await asyncHandler(
+    deleteFileOrDirectory(product.absolutePath, true)
+  );
+
+  if (rmDirectoryError) console.log(rmDirectoryError);
 
   return res.json({
     status: 'OK',

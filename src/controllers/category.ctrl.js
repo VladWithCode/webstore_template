@@ -62,12 +62,14 @@ ctrl.getCategories = async (req, res, next) => {
   });
 };
 
-ctrl.getCategory = async (req, res) => {
+ctrl.getCategory = async (req, res, next) => {
   const { id } = req.params;
 
   const [category, findError] = await asyncHandler(Category.findById(id));
 
-  if (!category || findError) {
+  if (findError) return next(findError);
+
+  if (!category) {
     return res.json({
       status: 'NOT_FOUND',
       message: `No se encontró categoria con id: ${id}`,
@@ -87,7 +89,9 @@ ctrl.updateCategory = async (req, res, next) => {
 
   const [category, findError] = await asyncHandler(Category.findById(id));
 
-  if (!category || findError) {
+  if (findError) return next(findError);
+
+  if (!category) {
     return res.json({
       status: 'NOT_FOUND',
       message: `No se encontró categoria con id: ${id}`,
@@ -122,7 +126,9 @@ ctrl.deleteCategory = async (req, res, next) => {
 
   const [category, findError] = await asyncHandler(Category.findById(id));
 
-  if (!category || findError) {
+  if (findError) return next(findError);
+
+  if (!category) {
     return res.json({
       status: 'NOT_FOUND',
       message: `No se encontró categoria con id: ${id}`,
