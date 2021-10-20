@@ -64,8 +64,8 @@ ctrl.registerSale = async (req, res, next) => {
       currency: 'MXN',
       customer_info: {
         name: sale.customer.name,
-        phone: sale.customer.phoneNum || '=526188009090',
-        email: sale.customer.email || 'fakemail@gmail.com',
+        phone: sale.customer.phoneNum || '+526188009090',
+        email: sale.customer.email || 'zickgamemaster@gmail.com',
       },
       line_items: lineItems,
       charges: [
