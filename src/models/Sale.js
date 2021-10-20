@@ -7,7 +7,7 @@ const SaleSchema = new Schema(
     customer: new Schema(
       {
         name: String,
-        phone: String,
+        phoneNum: String,
         email: String,
       },
       { _id: false, versionKey: false }
