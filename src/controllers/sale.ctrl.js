@@ -20,7 +20,11 @@ ctrl.initSale = async (req, res) => {
 ctrl.registerSale = async (req, res, next) => {
   const saleData = req.body;
 
+console.log(saleData);
+
   const sale = new Sale(saleData);
+
+console.log(sale);
 
   const productIds = saleData.items?.map(i => i.product);
 
