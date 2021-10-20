@@ -8,6 +8,7 @@ const SaleSchema = new Schema(
       {
         name: String,
         phoneNum: String,
+        email: String,
       },
       { _id: false, versionKey: false }
     ),
@@ -34,6 +35,7 @@ const SaleSchema = new Schema(
     payment: new Schema(
       {
         _id: { type: String },
+        token: { type: String, required: true },
         method: { type: String, enum: ['paypal', 'tarjeta'] },
         // payerId: { type: String },
         paid: { type: Boolean, default: false },

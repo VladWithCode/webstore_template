@@ -1,4 +1,4 @@
-const Stripe = require('../config/stripe');
+const conekta = require('../config/conekta');
 const { asyncHandler, safeRound } = require('../functions/GeneralHelpers');
 
 const Product = require('../models/Product');
@@ -47,21 +47,45 @@ ctrl.registerSale = async (req, res, next) => {
 
   sale.payment.total = safeRound(sale.payment.subtotal + sale.payment.shipment);
 
-  const [payment, createPaymentError] = await asyncHandler(
-    Stripe.paymentIntents.create({
-      currency: 'MXN',
+  const lineItems = [];
+
+  sale.items.forEach(i => {
+    lineItems.push({
+      name: i.name,
+      unit_price: i.price * 100,
+      quantity: i.qty,
+      sku: String(i._id),
+    });
+  });
+
+  const [orderResponse, createOrderError] = await asyncHandler(
+    conekta.Order.create({
       amount: sale.payment.total * 100,
-      description: 'Compra de ropa en prettyprieto.com',
-      payment_method: saleData.methodId,
-      confirm: true,
+      currency: 'MXN',
+      customer_info: {
+        name: sale.customer.name,
+        phone: sale.customer.phoneNum,
+        email: sale.customer.email || 'fakemail@gmail.com',
+      },
+      line_items: lineItems,
+      charges: [
+        {
+          payment_method: {
+            type: 'card',
+            token_id: sale.payment.token,
+          },
+        },
+      ],
     })
   );
 
-  if (createPaymentError) return next(createPaymentError);
+  if (createOrderError) return next(createOrderError);
 
-  sale._id = payment.id;
-  sale.payment.paid = true;
-  sale.payment.paidAt = new Date();
+  const order = orderResponse.toObject();
+
+  sale._id = order.id;
+  sale.payment.paid = order.payment_status === 'paid';
+  sale.payment.paidAt = order.created_at;
 
   const [, saveError] = await asyncHandler(sale.save());
 

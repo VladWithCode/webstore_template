@@ -13,6 +13,7 @@
     "bcrypt": "^5.0.1",
     "busboy-body-parser": "^0.3.2",
     "compression": "^1.7.4",
+    "conekta": "^4.2.0",
     "connect-mongodb-session": "^3.1.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -23,7 +24,6 @@
     "morgan": "^1.10.0",
     "nanoid": "^3.1.30",
     "passport": "^0.5.0",
-    "passport-local": "^1.0.0",
-    "stripe": "^8.183.0"
+    "passport-local": "^1.0.0"
   }
 }
