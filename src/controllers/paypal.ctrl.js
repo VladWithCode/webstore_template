@@ -98,7 +98,7 @@ ctrl.captureOrder = async (req, res, next) => {
   const captureOrderRequest = new paypal.orders.OrdersCaptureRequest(orderID);
   captureOrderRequest.requestBody({});
 
-  const [auth, captureOrderError] = await asyncHandler(
+  const [capture, captureOrderError] = await asyncHandler(
     paypalClient.execute(captureOrderRequest)
   );
 
@@ -107,7 +107,7 @@ ctrl.captureOrder = async (req, res, next) => {
   sale.payment.paid = true;
   sale.payment.paidAt = new Date();
 
-  const paymentCapture = auth.result.purchase_units[0].payments.captures[0];
+  const paymentCapture = capture.result.purchase_units[0].payments.captures[0];
 
   sale.payment.paypalFee =
     +paymentCapture.seller_receivable_breakdown.paypal_fee.value;
@@ -121,7 +121,7 @@ ctrl.captureOrder = async (req, res, next) => {
   return res.json({
     status: 'OK',
     sale,
-    order: auth.result,
+    order: capture.result,
   });
 };
 
