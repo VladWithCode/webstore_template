@@ -27,6 +27,7 @@ const SaleSchema = new Schema(
       new Schema({
         product: { type: Types.ObjectId, ref: 'Product' },
         name: { type: String },
+        size: { type: String, enum: ['S', 'M', 'L', 'XL'] },
         qty: { type: Number, default: 1 },
         price: { type: Number, default: 0 },
         total: { type: Number, default: 0 },
@@ -35,7 +36,7 @@ const SaleSchema = new Schema(
     payment: new Schema(
       {
         _id: { type: String },
-        token: { type: String, required: true },
+        token: { type: String },
         method: { type: String, enum: ['paypal', 'tarjeta'] },
         // payerId: { type: String },
         paid: { type: Boolean, default: false },
@@ -44,6 +45,8 @@ const SaleSchema = new Schema(
         tax: { type: Number, default: 0 },
         shipment: { type: Number, default: 0 },
         total: { type: Number, default: 0 },
+        paypalFee: { type: Number, default: 0 },
+        earnings: { type: Number, default: 0 },
       },
       { _id: false, id: false }
     ),
