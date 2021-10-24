@@ -125,6 +125,40 @@ ctrl.captureOrder = async (req, res, next) => {
   });
 };
 
-ctrl.getOrder = async (req, res, next) => {};
+ctrl.getOrder = async (req, res, next) => {
+  const { orderID } = req.params;
+
+  const [sale, findError] = await asyncHandler(
+    Sale.findOne({
+      'payment._id': orderID,
+    }).lean()
+  );
+
+  if (findError) return next(findError);
+
+  if (!sale)
+    return res.json({
+      status: 'NOT_FOUND',
+      message: `No se encontró una venta para el id de pago: ${orderID}`,
+    });
+
+  const [order, getOrderError] = await asyncHandler(
+    paypalClient.execute(paypal.orders.OrdersGetRequest(orderID))
+  );
+
+  if (getOrderError) return next(getOrderError);
+
+  if (!order)
+    return res.json({
+      status: 'NOT_FOUND',
+      message: `No se encontró una orden para el id: ${orderID}`,
+    });
+
+  return res.json({
+    status: 'OK',
+    sale,
+    order,
+  });
+};
 
 module.exports = ctrl;
