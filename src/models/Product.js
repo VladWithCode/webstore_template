@@ -9,7 +9,6 @@ const ProductSchema = new Schema(
     price: { type: Number },
     imgs: { type: [String] },
     category: { type: String },
-    subcategory: { type: String },
     stock: { type: Number, default: 1 },
     absolutePath: { type: String },
     staticPath: { type: String },

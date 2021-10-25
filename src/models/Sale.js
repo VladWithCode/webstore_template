@@ -6,6 +6,7 @@ const SaleSchema = new Schema(
     _id: { type: String, default: () => nanoid(8) },
     customer: new Schema(
       {
+        id: Types.ObjectId,
         name: String,
         phone: String,
         email: String,
