@@ -143,7 +143,7 @@ ctrl.getOrder = async (req, res, next) => {
     });
 
   const [order, getOrderError] = await asyncHandler(
-    paypalClient.execute(paypal.orders.OrdersGetRequest(orderID))
+    paypalClient.execute(new paypal.orders.OrdersGetRequest(orderID))
   );
 
   if (getOrderError) return next(getOrderError);
