@@ -58,7 +58,7 @@ ctrl.createOrder = async (req, res, next) => {
     purchase_units: [
       {
         amount: {
-          currency_code: 'USD',
+          currency_code: 'MXN',
           value: `${sale.payment.total.toFixed(2)}`,
         },
       },
