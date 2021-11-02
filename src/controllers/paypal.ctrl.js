@@ -118,6 +118,8 @@ ctrl.captureOrder = async (req, res, next) => {
 
   if (saveError) return next(saveError);
 
+  console.log(capture.result);
+
   return res.json({
     status: 'OK',
     sale,
