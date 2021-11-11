@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const { Schema, model, Types } = require('mongoose');
 const { slugifyName } = require('../functions/SchemaHelpers');
 
@@ -24,6 +25,7 @@ const CustomerSchema = new Schema(
       tax: { type: Number, default: 0 },
       shipment: { type: Number, default: 0 },
       total: { type: Number },
+      isEmpty: { type: Boolean, default: true },
     },
     addresses: [
       {

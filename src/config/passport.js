@@ -48,25 +48,34 @@ passport.use(
 
 // Customer deserialization
 passport.deserializeUser(async (id, done) => {
-  const [user, findError] = await asyncHandler(Customer.findById(id));
+  const [customer, findError] = await asyncHandler(Customer.findById(id));
 
   if (findError) return done(findError, false);
 
-  return done(null, user);
-  z;
+  return done(null, customer);
 });
 
 // Customer signin strategy
 passport.use(
   'local-signin',
   new LocalStrategy(
-    { usernameField: 'user', passwordField: 'pass' },
-    async (user, pw, done) => {}
+    { usernameField: 'email', passwordField: 'pass' },
+    async (email, _pw, done) => {
+      const [customer, findError] = await asyncHandler(
+        Customer.findOne({ email })
+      );
+
+      if (findError) return done(findError, false);
+
+      if (!customer) return done(null, false);
+
+      return done(null, customer);
+    }
   )
 );
 
 // Customer signup strategy
-passport.use(
+/* passport.use(
   'local-signup',
   new LocalStrategy(
     {
@@ -76,4 +85,4 @@ passport.use(
     },
     async (req, user, pw, done) => {}
   )
-);
+); */

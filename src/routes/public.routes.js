@@ -1,18 +1,27 @@
 const Router = require('express').Router;
+
+const authRouter = require('./public/auth-api');
 // const businessRoutes = require('./public/business-api');
 const categoryRoutes = require('./public/category-api');
+const customerRoutes = require('./public/customer-api');
 const paypalRoutes = require('./public/paypal-api');
 const productRoutes = require('./public/product-api');
 // const cartRoutes = require('./public/cart-api');
 const saleRoutes = require('./public/sale-api');
 
+const { isAuthenticated } = require('../functions/AuthHelpers');
+
 const router = Router();
+
+router.use('/auth', authRouter);
 
 // router.use('/business', businessRoutes);
 
 // router.use('/cart', cartRoutes);
 
 router.use('/categories', categoryRoutes);
+
+router.use('/customers', isAuthenticated, customerRoutes);
 
 router.use('/paypal', paypalRoutes);
 

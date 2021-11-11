@@ -7,7 +7,7 @@ const sessionStorage = require('connect-mongodb-session');
 const cookieParser = require('cookie-parser');
 const busboyBodyParser = require('busboy-body-parser');
 const morgan = require('morgan');
-// const passport = require('passport');
+const passport = require('passport');
 const cors = require('cors');
 const compression = require('compression');
 
@@ -28,7 +28,7 @@ const mdbStore = new (sessionStorage(session))(
 );
 
 require('./config/db');
-// require('./config/passport');
+require('./config/passport');
 const { PORT } = require('./config/env');
 
 /* Route Imports */
@@ -61,8 +61,8 @@ app.use(
     store: mdbStore,
   })
 );
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(compression({ threshold: 0 }));
 // Use morgan loggin when not in production mode
 (process.env.NODE_ENV !== 'production' && app.use(morgan('dev'))) ||
