@@ -57,7 +57,7 @@ passport.deserializeUser(async (id, done) => {
 
 // Customer signin strategy
 passport.use(
-  'local-signin',
+  'local.signin',
   new LocalStrategy(
     { usernameField: 'email', passwordField: 'pass' },
     async (email, _pw, done) => {

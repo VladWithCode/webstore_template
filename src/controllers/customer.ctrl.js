@@ -24,4 +24,11 @@ ctrl.getCustomer = async (req, res, next) => {
   });
 };
 
+ctrl.getSessionCustomer = async (req, res, next) => {
+  return res.json({
+    status: 'OK',
+    customer: req.user,
+  });
+};
+
 module.exports = ctrl;

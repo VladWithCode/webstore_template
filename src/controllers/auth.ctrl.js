@@ -1,3 +1,4 @@
+const passport = require('passport');
 const { asyncHandler } = require('../functions/GeneralHelpers');
 const Customer = require('../models/Customer');
 
@@ -35,6 +36,47 @@ ctrl.singup = async (req, res, next) => {
   });
 };
 
-ctrl.signin = async (req, res, next) => {};
+ctrl.signin = async (req, res, next) => {
+  passport.authenticate(
+    'local.signin',
+    {
+      successRedirect: false,
+      failureRedirect: false,
+    },
+    async (err, customer, info) => {
+      if (err) return next(err);
+
+      if (!customer)
+        return res.json({
+          status: 'WRONG_USER',
+          message: `Usuario no registrado`,
+        });
+
+      if (!(await customer.validatePass(req.body.pass)))
+        return res.json({
+          status: 'WRONG_PASS',
+          message: `Contraseña incorrecta`,
+        });
+
+      req.logIn(customer, loginError => {
+        if (loginError) return next(loginError);
+
+        return res.json({
+          status: 'OK',
+          message: 'Autenticado con exito',
+        });
+      });
+    }
+  )(req, res, next);
+};
+
+ctrl.signOut = async (req, res, next) => {
+  req.logout();
+
+  return res.json({
+    status: 'OK',
+    message: `Sesión terminada con exito.`,
+  });
+};
 
 module.exports = ctrl;
