@@ -2,7 +2,7 @@ const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
 const { asyncHandler } = require('../functions/GeneralHelpers');
 const Admin = require('../models/Admin');
-const User = require('../models/User');
+const Customer = require('../models/Customer');
 
 passport.serializeUser((_, user, done) => {
   done(null, user);
@@ -46,20 +46,34 @@ passport.use(
   )
 );
 
-// User deserialization
+// Customer deserialization
 passport.deserializeUser(async (id, done) => {
-  const [user, findError] = await asyncHandler(User.findById(id));
+  const [user, findError] = await asyncHandler(Customer.findById(id));
 
   if (findError) return done(findError, false);
 
   return done(null, user);
+  z;
 });
 
-// User signin strategy
+// Customer signin strategy
 passport.use(
-  'user.signin',
+  'local-signin',
   new LocalStrategy(
     { usernameField: 'user', passwordField: 'pass' },
     async (user, pw, done) => {}
+  )
+);
+
+// Customer signup strategy
+passport.use(
+  'local-signup',
+  new LocalStrategy(
+    {
+      usernameField: 'user',
+      passwordField: 'pass',
+      passReqToCallback: true,
+    },
+    async (req, user, pw, done) => {}
   )
 );
