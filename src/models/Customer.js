@@ -9,13 +9,13 @@ const CustomerSchema = new Schema(
     phone: { type: String },
     email: { type: String },
     pass: { type: String, required: true },
-    history: { type: [] },
+    history: { type: [Types.ObjectId] },
     cart: {
       items: [
         {
           product: { type: Types.ObjectId, ref: 'Product' },
           name: { type: String },
-          size: { type: String, enum: ['S', 'M', 'L', 'XL'] },
+          size: { type: String },
           qty: { type: Number, default: 1 },
           price: { type: Number, default: 0 },
           total: { type: Number, default: 0 },

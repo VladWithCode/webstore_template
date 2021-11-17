@@ -11,6 +11,10 @@ const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID || '';
 
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
 
+const SESSION_SECRET = process.env.SESSION_SECRET || 'supersecretsecret';
+
+const COOKIE_SECRET = process.env.COOKIE_SECRET || 'keyboardcatcookies';
+
 module.exports = {
   NODE_ENV,
   DB_URI,
@@ -18,4 +22,6 @@ module.exports = {
   CONEKTA_API_KEY,
   PAYPAL_CLIENT_ID,
   PAYPAL_CLIENT_SECRET,
+  SESSION_SECRET,
+  COOKIE_SECRET,
 };

@@ -71,7 +71,10 @@ ctrl.signin = async (req, res, next) => {
 };
 
 ctrl.signOut = async (req, res, next) => {
+  res.clearCookie('connect.sid');
+
   req.logout();
+  req.session.destroy(null);
 
   return res.json({
     status: 'OK',

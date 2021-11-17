@@ -14,10 +14,20 @@ const compression = require('compression');
 // Inits
 const app = express();
 
+require('./config/db');
+require('./config/passport');
+const {
+  PORT,
+  DB_URI,
+  SESSION_SECRET,
+  COOKIE_SECRET,
+  NODE_ENV,
+} = require('./config/env');
+
 const mdbStore = new (sessionStorage(session))(
   {
     collection: 'sessions',
-    uri: process.env.DB_URI || 'mongodb://localhost/meals',
+    uri: DB_URI,
     expires: 1000 * 60 * 60 * 24, // 1 Day
   },
   err => {
@@ -26,10 +36,6 @@ const mdbStore = new (sessionStorage(session))(
     throw err;
   }
 );
-
-require('./config/db');
-require('./config/passport');
-const { PORT } = require('./config/env');
 
 /* Route Imports */
 const publicRoutes = require('./routes/public.routes');
@@ -48,14 +54,14 @@ app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(busboyBodyParser({ limit: '10mb', multi: true }));
-app.use(cookieParser(process.env.COOKIE_SECRET || 'keyboardcat'));
+app.use(cookieParser(COOKIE_SECRET));
 app.use(
   session({
     resave: false,
     saveUninitialized: false,
-    secret: process.env.SESSION_SECRET || 'supersecretsecret',
+    secret: SESSION_SECRET,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 Week
+      maxAge: 1000 * 60 * 60 * 24, // 1 Day
       sameSite: true,
     },
     store: mdbStore,
@@ -65,7 +71,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(compression({ threshold: 0 }));
 // Use morgan loggin when not in production mode
-(process.env.NODE_ENV !== 'production' && app.use(morgan('dev'))) ||
+(NODE_ENV !== 'production' && app.use(morgan('dev'))) ||
   app.use(morgan('common'));
 
 // Globals

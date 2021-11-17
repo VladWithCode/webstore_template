@@ -25,14 +25,14 @@ const SaleSchema = new Schema(
       { versionKey: false, _id: false, id: false }
     ),
     items: [
-      new Schema({
+      {
         product: { type: Types.ObjectId, ref: 'Product' },
         name: { type: String },
-        size: { type: String, enum: ['S', 'M', 'L', 'XL'] },
+        size: { type: String },
         qty: { type: Number, default: 1 },
         price: { type: Number, default: 0 },
         total: { type: Number, default: 0 },
-      }),
+      },
     ],
     payment: new Schema(
       {
