@@ -51,9 +51,9 @@ app.set('port', PORT);
 
 // Middlewares
 app.use(cors({ origin: '*' }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '30mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(busboyBodyParser({ limit: '10mb', multi: true }));
+app.use(busboyBodyParser({ limit: '30mb', multi: true }));
 app.use(cookieParser(COOKIE_SECRET));
 app.use(
   session({

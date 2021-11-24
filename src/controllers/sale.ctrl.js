@@ -45,7 +45,9 @@ ctrl.registerSale = async (req, res, next) => {
     sale.payment.subtotal += item.total;
   }
 
-  sale.payment.total = safeRound(sale.payment.subtotal + sale.payment.shipment);
+  sale.payment.total = safeRound(
+    sale.payment.subtotal + (sale.payment.shipment || 0)
+  );
 
   const lineItems = [];
 
@@ -54,13 +56,13 @@ ctrl.registerSale = async (req, res, next) => {
       name: i.name,
       unit_price: i.price * 100,
       quantity: i.qty,
-      sku: String(i._id),
+      sku: String(i.product),
     });
   });
 
   const [orderResponse, createOrderError] = await asyncHandler(
     conekta.Order.create({
-      amount: sale.payment.total * 100,
+      amount: sale.payment.total,
       currency: 'MXN',
       customer_info: {
         name: sale.customer.name,

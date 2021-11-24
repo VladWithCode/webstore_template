@@ -9,7 +9,6 @@ ctrl.createCategory = async (req, res, next) => {
   const category = new Category(categoryData);
 
   const [, saveError] = await asyncHandler(category.save());
-
   if (saveError) return next(saveError);
 
   return res.json({
