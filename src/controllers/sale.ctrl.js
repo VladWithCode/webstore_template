@@ -63,7 +63,7 @@ ctrl.registerSale = async (req, res, next) => {
   const [orderResponse, createOrderError] = await asyncHandler(
     conekta.Order.create({
       amount: sale.payment.total,
-      currency: 'MXN',
+      currency: 'USD',
       customer_info: {
         name: sale.customer.name,
         phone: sale.customer.phone,
