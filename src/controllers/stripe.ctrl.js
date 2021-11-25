@@ -7,7 +7,7 @@ const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
 
-ctrl.createPaymentIntent = (req, res, next) => {
+ctrl.createPaymentIntent = async (req, res, next) => {
   const { customerId } = req.body;
 
   let customer;
