@@ -5,6 +5,7 @@ const authRouter = require('./public/auth-api');
 const categoryRoutes = require('./public/category-api');
 const customerRoutes = require('./public/customer-api');
 const paypalRoutes = require('./public/paypal-api');
+const stripeRoutes = require('./public/stripe-api');
 const productRoutes = require('./public/product-api');
 // const cartRoutes = require('./public/cart-api');
 const saleRoutes = require('./public/sale-api');
@@ -24,6 +25,8 @@ router.use('/categories', categoryRoutes);
 router.use('/customers', isAuthenticated, customerRoutes);
 
 router.use('/paypal', paypalRoutes);
+
+router.use('/stripe', stripeRoutes);
 
 router.use('/products', productRoutes);
 
