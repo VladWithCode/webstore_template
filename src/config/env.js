@@ -16,7 +16,7 @@ const COOKIE_SECRET = process.env.COOKIE_SECRET || 'keyboardcatcookies';
 
 const DOMAIN_NAME = process.env.DOMAIN_NAME;
 
-console.log(CONEKTA_API_KEY);
+const STRIPE_SK = process.env.STRIPE_SK;
 
 module.exports = {
   NODE_ENV,
@@ -28,4 +28,5 @@ module.exports = {
   SESSION_SECRET,
   COOKIE_SECRET,
   DOMAIN_NAME,
+  STRIPE_SK,
 };

@@ -1,3 +1,4 @@
+const Customer = require('../models/Customer');
 const { safeRound } = require('./GeneralHelpers');
 
 const CustomerHelpers = {};
