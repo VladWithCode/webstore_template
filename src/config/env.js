@@ -14,6 +14,8 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'supersecretsecret';
 
 const COOKIE_SECRET = process.env.COOKIE_SECRET || 'keyboardcatcookies';
 
+const DOMAIN_NAME = process.env.DOMAIN_NAME;
+
 module.exports = {
   NODE_ENV,
   DB_URI,
@@ -23,4 +25,5 @@ module.exports = {
   PAYPAL_CLIENT_SECRET,
   SESSION_SECRET,
   COOKIE_SECRET,
+  DOMAIN_NAME,
 };

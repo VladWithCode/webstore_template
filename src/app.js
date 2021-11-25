@@ -22,6 +22,8 @@ const {
   SESSION_SECRET,
   COOKIE_SECRET,
   NODE_ENV,
+  DOMAIN_NAME,
+  CONEKTA_API_KEY,
 } = require('./config/env');
 
 const mdbStore = new (sessionStorage(session))(
@@ -49,8 +51,9 @@ const globals = require('./config/globals');
 app.set('public', globals.publicDirPath);
 app.set('port', PORT);
 
+console.log(CONEKTA_API_KEY);
 // Middlewares
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: DOMAIN_NAME || '*' }));
 app.use(express.json({ limit: '30mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(busboyBodyParser({ limit: '30mb', multi: true }));
