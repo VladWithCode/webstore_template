@@ -51,7 +51,6 @@ const globals = require('./config/globals');
 app.set('public', globals.publicDirPath);
 app.set('port', PORT);
 
-console.log(CONEKTA_API_KEY);
 // Middlewares
 app.use(cors({ origin: DOMAIN_NAME || '*' }));
 app.use(express.json({ limit: '30mb' }));
