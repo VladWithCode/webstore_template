@@ -2,7 +2,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 const PORT = process.env.PORT || 3000;
 
-const DB_URI = process.env.DB_URI || `mongodb://localhost:27017/store`;
+const DB_URI = process.env.DB_URI;
 
 const CONEKTA_API_KEY = process.env.CONEKTA_API_KEY;
 

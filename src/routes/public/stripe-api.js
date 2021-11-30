@@ -1,7 +1,12 @@
 const router = require('express').Router();
 
-const { createPaymentIntent } = require('../../controllers/stripe.ctrl');
+const {
+  createPaymentIntent,
+  saveSale,
+} = require('../../controllers/stripe.ctrl');
 
-router.post('/payment-intent', createPaymentIntent);
+router.post('/payment-intents', createPaymentIntent);
+
+router.post('/save-sale', saveSale);
 
 module.exports = router;

@@ -23,7 +23,6 @@ const {
   COOKIE_SECRET,
   NODE_ENV,
   DOMAIN_NAME,
-  CONEKTA_API_KEY,
 } = require('./config/env');
 
 const mdbStore = new (sessionStorage(session))(
