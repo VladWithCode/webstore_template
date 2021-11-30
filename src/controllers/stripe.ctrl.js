@@ -27,7 +27,7 @@ ctrl.createPaymentIntent = async (req, res, next) => {
   const [paymentIntent, createPaymentIntentError] = await asyncHandler(
     stripe.paymentIntents.create({
       amount: totalAmount * 100,
-      currency: 'usd',
+      currency: 'mxn',
       automatic_payment_methods: {
         enabled: true,
       },
