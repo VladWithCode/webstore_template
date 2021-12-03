@@ -28,9 +28,9 @@ ctrl.createPaymentIntent = async (req, res, next) => {
     stripe.paymentIntents.create({
       amount: totalAmount * 100,
       currency: 'mxn',
-      automatic_payment_methods: {
+      /* automatic_payment_methods: {
         enabled: true,
-      },
+      }, */
     })
   );
 
